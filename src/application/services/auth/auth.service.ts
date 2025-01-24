@@ -7,9 +7,13 @@ import { JwtExpirationTimeConguration } from '~/common/constants';
 import { TokenType, UserRole } from '~/common/enums';
 import { SignatureData, UserProfile } from '~/common/types';
 import { generateHash, isMatchingPasswordAndHash } from '~/common/utils';
-import { AUTH_LOGIN_FAILED } from '~/content/errors/auth.error';
+import { AUTH_FORBIDDEN, AUTH_LOGIN_FAILED } from '~/content/errors/auth.error';
 import { CUSTOMER_ALREDADY_EXIST } from '~/content/errors/customer.error';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { AccountStatus, Prisma, User } from '@prisma/client';
 
 @Injectable()
@@ -133,5 +137,28 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async validateCustomerProfile(id: string): Promise<UserProfile> {
+    const user = await this._usersRepository.getFirstUser({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phoneNumber: true,
+        isCustomer: true,
+        status: true,
+      },
+    });
+
+    if (!user || !user.isCustomer || user.status === AccountStatus.INACTIVE) {
+      throw new ForbiddenException(AUTH_FORBIDDEN);
+    }
+
+    return user as UserProfile;
   }
 }

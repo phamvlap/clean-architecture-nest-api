@@ -3,4 +3,9 @@ const AUTH_LOGIN_FAILED = {
   message: 'Email or password is incorrect',
 };
 
-export { AUTH_LOGIN_FAILED };
+const AUTH_FORBIDDEN = {
+  code: 'auth_forbidden',
+  message: 'You do not have permission for this action',
+};
+
+export { AUTH_LOGIN_FAILED, AUTH_FORBIDDEN };
