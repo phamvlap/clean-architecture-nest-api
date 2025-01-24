@@ -1,5 +1,6 @@
+import { generateHash } from './generate-hash';
 import { generateRandomString } from './generate-random-string';
 import { generateSlug } from './generate-slug';
 import { isEmptyObject } from './is-empty-object';
 
-export { generateRandomString, generateSlug, isEmptyObject };
+export { generateRandomString, generateSlug, isEmptyObject, generateHash };
