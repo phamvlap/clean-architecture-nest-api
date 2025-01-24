@@ -16,7 +16,7 @@ import { ZodValidationPipe } from '~/common/pipes/zod-validation-pipe';
 import { UserProfile } from '~/common/types';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { LocalCustomerGuard } from './guards/local-customer.guard';
+import { LocalCustomerGuard } from '~/application/guards/local-customer.guard';
 
 @Controller('auth')
 export class AuthController {

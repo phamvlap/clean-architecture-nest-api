@@ -3,7 +3,7 @@ import { AuthService } from '~/application/services/auth';
 import { RequestUser } from '~/common/decorators/request-user.decorator';
 import { UserProfile } from '~/common/types';
 import { Controller, Post, UseGuards } from '@nestjs/common';
-import { LocalAdminGuard } from './guards/local-admin.guard';
+import { LocalAdminGuard } from '~/application/guards/local-admin.guard';
 
 @Controller('auth/admin')
 export class AuthAdminController {

@@ -1,4 +1,4 @@
-import { JwtAdminGuard } from '~/application/controllers/auth/guards/jwt-admin.guard';
+import { JwtAdminGuard } from '~/application/guards/jwt-admin.guard';
 import { RequestUser } from '~/common/decorators/request-user.decorator';
 import { UserProfile } from '~/common/types';
 import { Controller, Get, UseGuards } from '@nestjs/common';
