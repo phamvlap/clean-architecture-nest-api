@@ -223,4 +223,27 @@ export class AuthService {
       refreshToken,
     };
   }
+
+  async validateAdminProfile(id: string): Promise<UserProfile> {
+    const user = await this._usersRepository.getFirstUser({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phoneNumber: true,
+        isAdmin: true,
+        status: true,
+      },
+    });
+
+    if (!user || !user.isAdmin || user.status === AccountStatus.INACTIVE) {
+      throw new ForbiddenException(AUTH_FORBIDDEN);
+    }
+
+    return user as UserProfile;
+  }
 }

@@ -1,3 +1,4 @@
+import { AdminModule } from '~/application/modules/admin.module';
 import { AuthModule } from '~/application/modules/auth.module';
 import { BrandsModule } from '~/application/modules/brands.module';
 import { CategoriesModule } from '~/application/modules/categories.module';
@@ -14,6 +15,7 @@ import { Module } from '@nestjs/common';
     ProductsModule,
     AuthModule,
     CustomersModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [],
