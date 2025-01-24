@@ -39,6 +39,16 @@ export class AuthService {
           expiresIn: JwtExpirationTimeConguration.REFRESH_TOKEN_EXPIRES_IN,
         },
       },
+      [UserRole.ADMIN]: {
+        [TokenType.ACCESS]: {
+          secretKey: process.env.ADMIN_JWT_ACCESS_TOKEN_SECRET_KEY as string,
+          expiresIn: JwtExpirationTimeConguration.ACCESS_TOKEN_EXPIRES_IN,
+        },
+        [TokenType.REFRESH]: {
+          secretKey: process.env.ADMIN_JWT_REFRESH_TOKEN_SECRET_KEY as string,
+          expiresIn: JwtExpirationTimeConguration.REFRESH_TOKEN_EXPIRES_IN,
+        },
+      },
     };
   }
 
@@ -160,5 +170,57 @@ export class AuthService {
     }
 
     return user as UserProfile;
+  }
+
+  async validateLoginAdmin(
+    email: string,
+    password: string,
+  ): Promise<UserProfile> {
+    const user = await this._usersRepository.getFirstUser({
+      where: {
+        email,
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phoneNumber: true,
+        password: true,
+        status: true,
+        isAdmin: true,
+      },
+    });
+
+    if (!user || !user.isAdmin || user.status === AccountStatus.INACTIVE) {
+      throw new BadRequestException(AUTH_LOGIN_FAILED);
+    }
+
+    const { password: passwordHash, ...userProfile } = user;
+
+    if (!isMatchingPasswordAndHash(password, passwordHash)) {
+      throw new BadRequestException(AUTH_LOGIN_FAILED);
+    }
+
+    return userProfile;
+  }
+
+  loginAdmin(user: UserProfile): LoginResponse {
+    const data: SignatureData = {
+      sub: user.id,
+      email: user.email,
+    };
+
+    const accessToken = sign(data, this._auth.ADMIN.ACCESS.secretKey, {
+      expiresIn: this._auth.ADMIN.ACCESS.expiresIn,
+    });
+    const refreshToken = sign(data, this._auth.ADMIN.REFRESH.secretKey, {
+      expiresIn: this._auth.ADMIN.REFRESH.expiresIn,
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }
