@@ -1,14 +1,42 @@
+import { sign } from 'jsonwebtoken';
+import { StringValue } from 'ms';
 import { RegisterCustomerDto } from '~/application/dtos/auth';
 import { UsersRepository } from '~/application/repositories/users.repository';
-import { AuthGetStartedResponse } from '~/application/responses';
-import { generateHash } from '~/common/utils';
+import { AuthGetStartedResponse, LoginResponse } from '~/application/responses';
+import { JwtExpirationTimeConguration } from '~/common/constants';
+import { TokenType, UserRole } from '~/common/enums';
+import { SignatureData, UserProfile } from '~/common/types';
+import { generateHash, isMatchingPasswordAndHash } from '~/common/utils';
+import { AUTH_LOGIN_FAILED } from '~/content/errors/auth.error';
 import { CUSTOMER_ALREDADY_EXIST } from '~/content/errors/customer.error';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AccountStatus, Prisma, User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly _usersRepository: UsersRepository) {}
+  private _auth: {
+    [key in UserRole]: {
+      [token in TokenType]: {
+        secretKey: string;
+        expiresIn: StringValue;
+      };
+    };
+  };
+
+  constructor(private readonly _usersRepository: UsersRepository) {
+    this._auth = {
+      [UserRole.CUSTOMER]: {
+        [TokenType.ACCESS]: {
+          secretKey: process.env.JWT_ACCESS_TOKEN_SECRET_KEY as string,
+          expiresIn: JwtExpirationTimeConguration.ACCESS_TOKEN_EXPIRES_IN,
+        },
+        [TokenType.REFRESH]: {
+          secretKey: process.env.JWT_REFRESH_TOKEN_SECRET_KEY as string,
+          expiresIn: JwtExpirationTimeConguration.REFRESH_TOKEN_EXPIRES_IN,
+        },
+      },
+    };
+  }
 
   async checkExistedUser(email: string): Promise<AuthGetStartedResponse> {
     const user = await this._usersRepository.getFirstUser({
@@ -53,5 +81,57 @@ export class AuthService {
     });
 
     return user;
+  }
+
+  async validateCustomerLogin(
+    email: string,
+    password: string,
+  ): Promise<UserProfile> {
+    const user = await this._usersRepository.getFirstUser({
+      where: {
+        email,
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phoneNumber: true,
+        password: true,
+        status: true,
+        isCustomer: true,
+      },
+    });
+
+    if (!user || !user.isCustomer || user.status === AccountStatus.INACTIVE) {
+      throw new BadRequestException(AUTH_LOGIN_FAILED);
+    }
+
+    const { password: passwordHash, ...userProfile } = user;
+
+    if (!isMatchingPasswordAndHash(password, passwordHash)) {
+      throw new BadRequestException(AUTH_LOGIN_FAILED);
+    }
+
+    return userProfile;
+  }
+
+  login(user: UserProfile): LoginResponse {
+    const data: SignatureData = {
+      sub: user.id,
+      email: user.email,
+    };
+
+    const accessToken = sign(data, this._auth.CUSTOMER.ACCESS.secretKey, {
+      expiresIn: this._auth.CUSTOMER.ACCESS.expiresIn,
+    });
+    const refreshToken = sign(data, this._auth.CUSTOMER.REFRESH.secretKey, {
+      expiresIn: this._auth.CUSTOMER.REFRESH.expiresIn,
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }

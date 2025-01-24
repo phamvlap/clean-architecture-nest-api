@@ -5,10 +5,14 @@ import {
   registerCustomerSchema,
 } from '~/application/dtos/auth';
 import { AuthGetStartedResponse } from '~/application/responses';
+import { LoginResponse } from '~/application/responses';
 import { AuthService } from '~/application/services/auth';
+import { RequestUser } from '~/common/decorators/request-user.decorator';
 import { ZodValidationPipe } from '~/common/pipes/zod-validation-pipe';
-import { Body, Controller, Post } from '@nestjs/common';
+import { UserProfile } from '~/common/types';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
+import { LocalCustomerGuard } from './guards/local-customer.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -28,5 +32,11 @@ export class AuthController {
     registerDto: RegisterCustomerDto,
   ): Promise<User> {
     return this._authService.register(registerDto);
+  }
+
+  @UseGuards(LocalCustomerGuard)
+  @Post('login')
+  login(@RequestUser() user: UserProfile): LoginResponse {
+    return this._authService.login(user);
   }
 }
