@@ -11,11 +11,16 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
+    "strict": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "~/application/*": ["./src/application/*"],
+      "~/common/*": ["./src/common/*"],
+      "~/content/*": ["./src/content/*"],
+      "~/infrastructure/*": ["./src/infrastructure/*"],
+    }
   }
 }
