@@ -1,0 +1,79 @@
+//******** AUTO GENERATED FILE, DO NOT EDIT.  *********
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Brand {
+  id        String    @id @default(uuid()) @db.VarChar(36)
+  name      String    @db.VarChar(255)
+  slug      String    @db.VarChar(255)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp
+
+  products Product[]
+
+  @@map("brands")
+}
+
+model Category {
+  id        String    @id @default(uuid()) @db.VarChar(36)
+  name      String    @db.VarChar(255)
+  slug      String    @db.VarChar(255)
+  ordering  Int       @default(0)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id                  String    @id @default(uuid()) @db.VarChar(36)
+  title               String    @db.VarChar(255)
+  urlSource           String    @default("") @map("url_source") @db.VarChar(255)
+  description         String    @default("") @db.Text
+  sku                 String    @db.VarChar(255)
+  price               Float     @default(0) @db.DoublePrecision
+  features            String[]  @default([])
+  specifications      String    @db.Text
+  images              String[]
+  warranty            String    @default("") @db.Text
+  deliveryInformation String?   @map("delivery_information") @db.VarChar(255)
+  slug                String    @db.VarChar(255)
+  deletedAt           DateTime? @map("deleted_at") @db.Timestamp
+
+  categoryId String  @map("category_id") @db.VarChar(36)
+  brandId    String? @map("brand_id") @db.VarChar(36)
+
+  category Category @relation(fields: [categoryId], references: [id])
+  brand    Brand?   @relation(fields: [brandId], references: [id])
+
+  @@map("products")
+}
+
+model User {
+  id                   String         @id @default(uuid()) @db.VarChar(36)
+  email                String         @db.VarChar(100)
+  firstName            String?        @map("first_name") @db.VarChar(100)
+  lastName             String?        @map("last_name") @db.VarChar(100)
+  phoneNumber          String?        @map("phone_number") @db.VarChar(17)
+  password             String         @db.Text
+  resetCode            String?        @map("reset_code") @db.VarChar(255)
+  resetCodeExpiresAt   DateTime?      @map("reset_code_expires_at") @db.Timestamp
+  isAdmin              Boolean?       @map("is_admin") @db.Boolean
+  isCustomer           Boolean?       @map("is_customer") @db.Boolean
+  isCustomerFirstLogin Boolean?       @map("is_customer_first_login") @db.Boolean
+  status               AccountStatus? @default(ACTIVE)
+
+  @@map("users")
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+}

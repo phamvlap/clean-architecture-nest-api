@@ -1,0 +1,23 @@
+model Product {
+  id                  String    @id @default(uuid()) @db.VarChar(36)
+  title               String    @db.VarChar(255)
+  urlSource           String    @default("") @map("url_source") @db.VarChar(255)
+  description         String    @default("") @db.Text
+  sku                 String    @db.VarChar(255)
+  price               Float     @default(0) @db.DoublePrecision
+  features            String[]  @default([])
+  specifications      String    @db.Text
+  images              String[]
+  warranty            String    @default("") @db.Text
+  deliveryInformation String?   @map("delivery_information") @db.VarChar(255)
+  slug                String    @db.VarChar(255)
+  deletedAt           DateTime? @map("deleted_at") @db.Timestamp
+
+  categoryId String  @map("category_id") @db.VarChar(36)
+  brandId    String? @map("brand_id") @db.VarChar(36)
+
+  category Category @relation(fields: [categoryId], references: [id])
+  brand    Brand?   @relation(fields: [brandId], references: [id])
+
+  @@map("products")
+}
