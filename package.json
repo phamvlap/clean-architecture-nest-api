@@ -36,7 +36,8 @@
     "prisma-merge": "^0.2.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
