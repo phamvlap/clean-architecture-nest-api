@@ -3,6 +3,10 @@ import {
   RegisterCustomerDto,
   getStartedSchema,
   registerCustomerSchema,
+  forgotPassword,
+  ForgotPassword,
+  resetPasswordSchema,
+  ResetPasswordDto,
 } from '~/application/dtos/auth';
 import { AuthGetStartedResponse } from '~/application/responses';
 import { LoginResponse } from '~/application/responses';
@@ -38,5 +42,19 @@ export class AuthController {
   @Post('login')
   login(@RequestUser() user: UserProfile): LoginResponse {
     return this._authService.login(user);
+  }
+
+  @Post('forgot-password')
+  async sendCode(
+    @Body(new ZodValidationPipe(forgotPassword)) body: ForgotPassword,
+  ): Promise<void> {
+    return this._authService.forgotPassword(body.email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Body(new ZodValidationPipe(resetPasswordSchema)) body: ResetPasswordDto,
+  ): Promise<void> {
+    return this._authService.resetPassword(body);
   }
 }

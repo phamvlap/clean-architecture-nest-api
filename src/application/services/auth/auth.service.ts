@@ -1,13 +1,21 @@
 import { sign } from 'jsonwebtoken';
 import { StringValue } from 'ms';
-import { RegisterCustomerDto } from '~/application/dtos/auth';
+import { RegisterCustomerDto, ResetPasswordDto } from '~/application/dtos/auth';
 import { UsersRepository } from '~/application/repositories/users.repository';
 import { AuthGetStartedResponse, LoginResponse } from '~/application/responses';
 import { JwtExpirationTimeConguration } from '~/common/constants';
 import { TokenType, UserRole } from '~/common/enums';
 import { SignatureData, UserProfile } from '~/common/types';
-import { generateHash, isMatchingPasswordAndHash } from '~/common/utils';
-import { AUTH_FORBIDDEN, AUTH_LOGIN_FAILED } from '~/content/errors/auth.error';
+import {
+  generateHash,
+  generateRandomString,
+  isMatchingPasswordAndHash,
+} from '~/common/utils';
+import {
+  AUTH_FAILED_RESET_PASSWORD,
+  AUTH_FORBIDDEN,
+  AUTH_LOGIN_FAILED,
+} from '~/content/errors/auth.error';
 import { CUSTOMER_ALREDADY_EXIST } from '~/content/errors/customer.error';
 import {
   BadRequestException,
@@ -245,5 +253,82 @@ export class AuthService {
     }
 
     return user as UserProfile;
+  }
+
+  async forgotPassword(email: string): Promise<void> {
+    const user = await this._usersRepository.getFirstUser({
+      where: {
+        email,
+      },
+    });
+
+    if (!user) {
+      return;
+    }
+
+    let needToGenNewCode = true;
+    let secretCode = generateRandomString(6, true, false);
+
+    if (user.resetCode && user.resetCodeExpiresAt) {
+      const now = new Date();
+      const expiredAt = new Date(user.resetCodeExpiresAt);
+
+      if (now.getTime() < expiredAt.getTime()) {
+        secretCode = user.resetCode;
+        needToGenNewCode = false;
+      }
+    }
+
+    if (needToGenNewCode) {
+      const expirationTime = new Date(Date.now() + 5 * 60 * 1000);
+
+      await this._usersRepository.updateUser({
+        where: {
+          id: user.id,
+        },
+        data: {
+          resetCode: secretCode,
+          resetCodeExpiresAt: expirationTime,
+        },
+      });
+    }
+
+    // TODO: Send email with secret code
+  }
+
+  async resetPassword(payload: ResetPasswordDto): Promise<void> {
+    const user = await this._usersRepository.getFirstUser({
+      where: {
+        email: payload.email,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException(AUTH_FAILED_RESET_PASSWORD);
+    }
+
+    if (!user.resetCode || user.resetCode !== payload.code) {
+      throw new BadRequestException(AUTH_FAILED_RESET_PASSWORD);
+    }
+
+    if (
+      !user.resetCodeExpiresAt ||
+      new Date().getTime() > new Date(user.resetCodeExpiresAt).getTime()
+    ) {
+      throw new BadRequestException(AUTH_FAILED_RESET_PASSWORD);
+    }
+
+    const passwordHash = generateHash(payload.password);
+
+    await this._usersRepository.updateUser({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: passwordHash,
+        resetCode: null,
+        resetCodeExpiresAt: null,
+      },
+    });
   }
 }

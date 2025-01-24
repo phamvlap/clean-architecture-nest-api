@@ -8,4 +8,9 @@ const AUTH_FORBIDDEN = {
   message: 'You do not have permission for this action',
 };
 
-export { AUTH_LOGIN_FAILED, AUTH_FORBIDDEN };
+const AUTH_FAILED_RESET_PASSWORD = {
+  code: 'auth_failed_reset_password',
+  message: 'Failed to reset password',
+};
+
+export { AUTH_LOGIN_FAILED, AUTH_FORBIDDEN, AUTH_FAILED_RESET_PASSWORD };
