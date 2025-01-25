@@ -6,6 +6,9 @@ import { CustomersModule } from '~/application/modules/customer.module';
 import { ProductsModule } from '~/application/modules/products.module';
 import { PrismaModule } from '~/infrastructure/prisma/prisma.module';
 import { Module } from '@nestjs/common';
+import { HandlebarsModule } from './infrastructure/handlebars/handlebars.module';
+import { MailModule } from './infrastructure/mail/mail.module';
+import { QueueModule } from './infrastructure/queue/queue.module';
 
 @Module({
   imports: [
@@ -16,6 +19,9 @@ import { Module } from '@nestjs/common';
     AuthModule,
     CustomersModule,
     AdminModule,
+    HandlebarsModule,
+    MailModule,
+    QueueModule,
   ],
   controllers: [],
   providers: [],

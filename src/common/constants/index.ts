@@ -20,3 +20,11 @@ export const StrategyNames = {
   JWT_CUSTOMER: 'JWT_CUSTOMER',
   JWT_ADMIN: 'JWT_ADMIN',
 };
+
+export const QueueConsts = {
+  AUTH_QUEUE: 'AUTH_QUEUE',
+};
+
+export const QueueJobConsts = {
+  SEND_SECRET_CODE: 'SEND_SECRET_CODE',
+};

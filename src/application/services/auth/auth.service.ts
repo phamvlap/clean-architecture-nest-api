@@ -3,9 +3,14 @@ import { StringValue } from 'ms';
 import { RegisterCustomerDto, ResetPasswordDto } from '~/application/dtos/auth';
 import { UsersRepository } from '~/application/repositories/users.repository';
 import { AuthGetStartedResponse, LoginResponse } from '~/application/responses';
+import { AuthQueue } from '~/application/services/auth';
 import { JwtExpirationTimeConguration } from '~/common/constants';
 import { TokenType, UserRole } from '~/common/enums';
-import { SignatureData, UserProfile } from '~/common/types';
+import {
+  SendingSecretCodeEmailData,
+  SignatureData,
+  UserProfile,
+} from '~/common/types';
 import {
   generateHash,
   generateRandomString,
@@ -35,7 +40,10 @@ export class AuthService {
     };
   };
 
-  constructor(private readonly _usersRepository: UsersRepository) {
+  constructor(
+    private readonly _usersRepository: UsersRepository,
+    private readonly _authQueue: AuthQueue,
+  ) {
     this._auth = {
       [UserRole.CUSTOMER]: {
         [TokenType.ACCESS]: {
@@ -293,7 +301,12 @@ export class AuthService {
       });
     }
 
-    // TODO: Send email with secret code
+    const templateData: SendingSecretCodeEmailData = {
+      email: user.email,
+      secretCode,
+    };
+
+    await this._authQueue.addSendSecretCodeJob(templateData);
   }
 
   async resetPassword(payload: ResetPasswordDto): Promise<void> {
