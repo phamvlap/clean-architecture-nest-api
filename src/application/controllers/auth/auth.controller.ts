@@ -1,13 +1,14 @@
 import {
+  ForgotPassword,
   GetStartedDto,
   RegisterCustomerDto,
+  ResetPasswordDto,
+  forgotPassword,
   getStartedSchema,
   registerCustomerSchema,
-  forgotPassword,
-  ForgotPassword,
   resetPasswordSchema,
-  ResetPasswordDto,
 } from '~/application/dtos/auth';
+import { LocalCustomerGuard } from '~/application/guards/local-customer.guard';
 import { AuthGetStartedResponse } from '~/application/responses';
 import { LoginResponse } from '~/application/responses';
 import { AuthService } from '~/application/services/auth';
@@ -16,7 +17,6 @@ import { ZodValidationPipe } from '~/common/pipes/zod-validation-pipe';
 import { UserProfile } from '~/common/types';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { LocalCustomerGuard } from '~/application/guards/local-customer.guard';
 
 @Controller('auth')
 export class AuthController {
