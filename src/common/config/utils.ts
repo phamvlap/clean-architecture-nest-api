@@ -1,6 +1,6 @@
+import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import * as dotenv from 'dotenv';
-import { readFile } from 'fs/promises';
 import { InternalServerErrorException } from '@nestjs/common';
 import { EnvironmentVariables, ValidationSchema } from './validation-schema';
 
@@ -16,10 +16,10 @@ export const sanitizeConfig = (
   return data;
 };
 
-export const readEnvironmentVariablesConfig = async (
+export const readEnvironmentVariablesConfig = (
   path: string,
-): Promise<EnvironmentVariables> => {
-  const envFileContent = await readFile(path, { encoding: 'utf-8' });
+): EnvironmentVariables => {
+  const envFileContent = readFileSync(path, { encoding: 'utf-8' });
   const envVariables = dotenv.parse(envFileContent);
 
   const config = sanitizeConfig(envVariables);

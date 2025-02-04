@@ -11,7 +11,7 @@ import { QueueModule } from '~/infrastructure/queue/queue.module';
 import { Module } from '@nestjs/common';
 
 @Module({
-  imports: [HandlebarsModule, QueueModule.registerAsync()],
+  imports: [HandlebarsModule, QueueModule.register()],
   controllers: [AuthController, AuthAdminController],
   providers: [
     UsersRepository,

@@ -5,13 +5,14 @@ import {
 import { QueueConsts } from '~/common/constants';
 import { BullModule } from '@nestjs/bullmq';
 import { DynamicModule, Module } from '@nestjs/common';
+import { ConfigurableModuleClass } from './queue.module-definition';
 import { QueueService } from './queue.service';
 
 @Module({})
-export class QueueModule {
-  static async registerAsync(): Promise<DynamicModule> {
+export class QueueModule extends ConfigurableModuleClass {
+  static register(): DynamicModule {
     const envFilePath = getCurrentEnvFilePath();
-    const config = await readEnvironmentVariablesConfig(envFilePath);
+    const config = readEnvironmentVariablesConfig(envFilePath);
 
     return {
       module: QueueModule,
