@@ -12,7 +12,7 @@ import { LocalCustomerGuard } from '~/application/guards/local-customer.guard';
 import { AuthGetStartedResponse } from '~/application/responses';
 import { LoginResponse } from '~/application/responses';
 import { AuthService } from '~/application/services/auth';
-import { RequestUser } from '~/common/decorators/request-user.decorator';
+import { RequestUser } from '~/common/decorators';
 import { ZodValidationPipe } from '~/common/pipes/zod-validation-pipe';
 import { UserProfile } from '~/common/types';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';

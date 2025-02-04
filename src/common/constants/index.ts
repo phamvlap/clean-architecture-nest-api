@@ -1,5 +1,8 @@
 import { StringValue } from 'ms';
 
+export const DEFAULT_NODE_ENV = 'local';
+export const TIME_TO_LIVE_OF_SECRET_CODE_FOR_RESETING_PASSWORD = 5 * 60 * 1000;
+
 export const DefaultPaginationParams = {
   LIMIT: 10,
   PAGE: 1,
@@ -27,4 +30,19 @@ export const QueueConsts = {
 
 export const QueueJobConsts = {
   SEND_SECRET_CODE: 'SEND_SECRET_CODE',
+};
+
+export const TransportProviders = {
+  GMAIL: 'gmail',
+};
+
+export const LocalStrategyValidationFields = {
+  ADMIN: {
+    USERNAME: 'email',
+    PASSWORD: 'password',
+  },
+  CUSTOMER: {
+    USERNAME: 'email',
+    PASSWORD: 'password',
+  },
 };

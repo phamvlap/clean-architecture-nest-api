@@ -1,34 +1,45 @@
 import { Job } from 'bullmq';
 import { OAuth2Client } from 'google-auth-library';
 import * as nodemailer from 'nodemailer';
-import { QueueConsts, QueueJobConsts } from '~/common/constants';
+import {
+  getCurrentEnvFilePath,
+  readEnvironmentVariablesConfig,
+} from '~/common/config/utils';
+import {
+  QueueConsts,
+  QueueJobConsts,
+  TransportProviders,
+} from '~/common/constants';
 import { EmailContent } from '~/common/types';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 
 @Processor(QueueConsts.AUTH_QUEUE)
 export class MailProcessor extends WorkerHost {
   async process(job: Job<any, any, string>) {
+    const envFilePath = getCurrentEnvFilePath();
+    const config = readEnvironmentVariablesConfig(envFilePath);
+
     const oAuth2Client = new OAuth2Client(
-      process.env.GOOGLE_OAUTH_CLIENT_ID,
-      process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+      config.GOOGLE_OAUTH_CLIENT_ID,
+      config.GOOGLE_OAUTH_CLIENT_SECRET,
     );
 
     oAuth2Client.setCredentials({
-      refresh_token: process.env.GOOGLE_OAUTH_REFRESH_TOKEN,
+      refresh_token: config.GOOGLE_OAUTH_REFRESH_TOKEN,
     });
 
     const accessTokenResponse = await oAuth2Client.getAccessToken();
     const accessToken = accessTokenResponse.token;
-    const adminEmail = process.env.ADMIN_EMAIL;
+    const senderEmail = config.SENDER_EMAIL;
 
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: TransportProviders.GMAIL,
       auth: {
         type: 'OAuth2',
-        user: adminEmail,
-        clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-        refreshToken: process.env.GOOGLE_OAUTH_REFRESH_TOKEN,
+        user: senderEmail,
+        clientId: config.GOOGLE_OAUTH_CLIENT_ID,
+        clientSecret: config.GOOGLE_OAUTH_CLIENT_SECRET,
+        refreshToken: config.GOOGLE_OAUTH_REFRESH_TOKEN,
         accessToken: accessToken?.toString(),
       },
     });
@@ -43,7 +54,7 @@ export class MailProcessor extends WorkerHost {
           } = job.data as EmailContent;
 
           transporter.sendMail({
-            from: adminEmail,
+            from: senderEmail,
             to,
             subject,
             html,

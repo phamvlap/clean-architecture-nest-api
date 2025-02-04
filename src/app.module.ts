@@ -5,6 +5,7 @@ import { CategoriesModule } from '~/application/modules/categories.module';
 import { CustomersModule } from '~/application/modules/customers.module';
 import { ProductsModule } from '~/application/modules/products.module';
 import { ValidationSchema } from '~/common/config/validation-schema';
+import { DEFAULT_NODE_ENV } from '~/common/constants';
 import { MailModule } from '~/infrastructure/mail/mail.module';
 import { PrismaModule } from '~/infrastructure/prisma/prisma.module';
 import { Module } from '@nestjs/common';
@@ -14,7 +15,7 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV || 'local'}`,
+      envFilePath: `.env.${process.env.NODE_ENV || DEFAULT_NODE_ENV}`,
       validate: (value: Record<string, any>) => ValidationSchema.parse(value),
     }),
     PrismaModule,

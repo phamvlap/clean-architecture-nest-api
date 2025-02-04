@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import * as dotenv from 'dotenv';
+import { DEFAULT_NODE_ENV } from '~/common/constants';
 import { InternalServerErrorException } from '@nestjs/common';
 import { EnvironmentVariables, ValidationSchema } from './validation-schema';
 
@@ -28,5 +29,8 @@ export const readEnvironmentVariablesConfig = (
 };
 
 export const getCurrentEnvFilePath = (): string => {
-  return resolve(process.cwd(), `.env.${process.env.NODE_ENV || 'local'}`);
+  return resolve(
+    process.cwd(),
+    `.env.${process.env.NODE_ENV || DEFAULT_NODE_ENV}`,
+  );
 };

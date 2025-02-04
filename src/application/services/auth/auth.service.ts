@@ -5,7 +5,10 @@ import { UsersRepository } from '~/application/repositories/users.repository';
 import { AuthGetStartedResponse, LoginResponse } from '~/application/responses';
 import { AuthQueue } from '~/application/services/auth';
 import { EnvironmentVariables } from '~/common/config/validation-schema';
-import { JwtExpirationTimeConguration } from '~/common/constants';
+import {
+  JwtExpirationTimeConguration,
+  TIME_TO_LIVE_OF_SECRET_CODE_FOR_RESETING_PASSWORD,
+} from '~/common/constants';
 import { TokenType, UserRole } from '~/common/enums';
 import {
   SendingSecretCodeEmailData,
@@ -299,7 +302,9 @@ export class AuthService {
     }
 
     if (needToGenNewCode) {
-      const expirationTime = new Date(Date.now() + 5 * 60 * 1000);
+      const expirationTime = new Date(
+        Date.now() + TIME_TO_LIVE_OF_SECRET_CODE_FOR_RESETING_PASSWORD,
+      );
 
       await this._usersRepository.updateUser({
         where: {

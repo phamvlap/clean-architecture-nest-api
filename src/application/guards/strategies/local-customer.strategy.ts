@@ -1,6 +1,9 @@
 import { Strategy } from 'passport-local';
 import { AuthService } from '~/application/services/auth';
-import { StrategyNames } from '~/common/constants';
+import {
+  LocalStrategyValidationFields,
+  StrategyNames,
+} from '~/common/constants';
 import { UserProfile } from '~/common/types';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
@@ -12,8 +15,8 @@ export class LocalCustomerStrategy extends PassportStrategy(
 ) {
   constructor(private readonly _authService: AuthService) {
     super({
-      usernameField: 'email',
-      passwordField: 'password',
+      usernameField: LocalStrategyValidationFields.CUSTOMER.USERNAME,
+      passwordField: LocalStrategyValidationFields.CUSTOMER.PASSWORD,
     });
   }
 

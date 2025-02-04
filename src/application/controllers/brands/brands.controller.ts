@@ -8,7 +8,7 @@ import {
 } from '~/application/dtos/brands';
 import { AllItemsResponse } from '~/application/responses';
 import { BrandsService } from '~/application/services/brands';
-import { PaginationInterceptor } from '~/common/interceptors/pagination.interceptor';
+import { PaginationInterceptor } from '~/common/interceptors';
 import { ZodValidationPipe } from '~/common/pipes/zod-validation-pipe';
 import {
   Body,

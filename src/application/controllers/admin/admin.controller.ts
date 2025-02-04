@@ -1,5 +1,5 @@
 import { JwtAdminGuard } from '~/application/guards/jwt-admin.guard';
-import { RequestUser } from '~/common/decorators/request-user.decorator';
+import { RequestUser } from '~/common/decorators';
 import { UserProfile } from '~/common/types';
 import { Controller, Get, UseGuards } from '@nestjs/common';
 

@@ -15,7 +15,7 @@ export const ValidationSchema = z.object({
   GOOGLE_OAUTH_CLIENT_ID: z.string().nonempty(),
   GOOGLE_OAUTH_CLIENT_SECRET: z.string().nonempty(),
   GOOGLE_OAUTH_REFRESH_TOKEN: z.string().nonempty(),
-  ADMIN_EMAIL: z.string().nonempty(),
+  SENDER_EMAIL: z.string().nonempty(),
 });
 
 export type EnvironmentVariables = z.infer<typeof ValidationSchema>;
