@@ -7,11 +7,11 @@ import { LocalCustomerStrategy } from '~/application/guards/strategies/local-cus
 import { UsersRepository } from '~/application/repositories/users.repository';
 import { AuthQueue, AuthService } from '~/application/services/auth';
 import { HandlebarsModule } from '~/infrastructure/handlebars/handlebars.module';
-import { MailModule } from '~/infrastructure/mail/mail.module';
+import { QueueModule } from '~/infrastructure/queue/queue.module';
 import { Module } from '@nestjs/common';
 
 @Module({
-  imports: [HandlebarsModule, MailModule],
+  imports: [HandlebarsModule, QueueModule],
   controllers: [AuthController, AuthAdminController],
   providers: [
     UsersRepository,

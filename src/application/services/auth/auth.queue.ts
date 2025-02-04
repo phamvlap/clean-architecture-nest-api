@@ -1,18 +1,18 @@
 import { EmailContent, SendingSecretCodeEmailData } from '~/common/types';
 import { Emails } from '~/content/emails';
 import { HandlebarsService } from '~/infrastructure/handlebars/handlebars.service';
-import { MailService } from '~/infrastructure/mail/mail.service';
+import { QueueService } from '~/infrastructure/queue/queue.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AuthQueue {
   constructor(
-    private readonly _mailService: MailService,
-    private readonly _handlebarService: HandlebarsService,
+    private readonly _queueService: QueueService,
+    private readonly _handlebarsService: HandlebarsService,
   ) {}
 
   async addSendSecretCodeJob(data: SendingSecretCodeEmailData) {
-    const content = this._handlebarService.compile(
+    const content = this._handlebarsService.compile(
       Emails.sendingSecretCode.content,
       { secretCode: data.secretCode },
     );
@@ -22,6 +22,6 @@ export class AuthQueue {
       subject: Emails.sendingSecretCode.subject,
       content,
     };
-    await this._mailService.addSendSecretCodeJob(emailContent);
+    await this._queueService.addSendSecretCodeJob(emailContent);
   }
 }
