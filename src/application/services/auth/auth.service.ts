@@ -4,6 +4,7 @@ import { RegisterCustomerDto, ResetPasswordDto } from '~/application/dtos/auth';
 import { UsersRepository } from '~/application/repositories/users.repository';
 import { AuthGetStartedResponse, LoginResponse } from '~/application/responses';
 import { AuthQueue } from '~/application/services/auth';
+import { EnvironmentVariables } from '~/common/config/validation-schema';
 import { JwtExpirationTimeConguration } from '~/common/constants';
 import { TokenType, UserRole } from '~/common/enums';
 import {
@@ -27,6 +28,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AccountStatus, Prisma, User } from '@prisma/client';
 
 @Injectable()
@@ -43,25 +45,34 @@ export class AuthService {
   constructor(
     private readonly _usersRepository: UsersRepository,
     private readonly _authQueue: AuthQueue,
+    private readonly _configService: ConfigService<EnvironmentVariables, true>,
   ) {
     this._auth = {
       [UserRole.CUSTOMER]: {
         [TokenType.ACCESS]: {
-          secretKey: process.env.JWT_ACCESS_TOKEN_SECRET_KEY as string,
+          secretKey: this._configService.get<string>(
+            'JWT_ACCESS_TOKEN_SECRET_KEY',
+          ),
           expiresIn: JwtExpirationTimeConguration.ACCESS_TOKEN_EXPIRES_IN,
         },
         [TokenType.REFRESH]: {
-          secretKey: process.env.JWT_REFRESH_TOKEN_SECRET_KEY as string,
+          secretKey: this._configService.get<string>(
+            'JWT_REFRESH_TOKEN_SECRET_KEY',
+          ),
           expiresIn: JwtExpirationTimeConguration.REFRESH_TOKEN_EXPIRES_IN,
         },
       },
       [UserRole.ADMIN]: {
         [TokenType.ACCESS]: {
-          secretKey: process.env.ADMIN_JWT_ACCESS_TOKEN_SECRET_KEY as string,
+          secretKey: this._configService.get<string>(
+            'ADMIN_JWT_ACCESS_TOKEN_SECRET_KEY',
+          ),
           expiresIn: JwtExpirationTimeConguration.ACCESS_TOKEN_EXPIRES_IN,
         },
         [TokenType.REFRESH]: {
-          secretKey: process.env.ADMIN_JWT_REFRESH_TOKEN_SECRET_KEY as string,
+          secretKey: this._configService.get<string>(
+            'ADMIN_JWT_REFRESH_TOKEN_SECRET_KEY',
+          ),
           expiresIn: JwtExpirationTimeConguration.REFRESH_TOKEN_EXPIRES_IN,
         },
       },
