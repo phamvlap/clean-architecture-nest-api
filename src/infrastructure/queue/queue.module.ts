@@ -1,23 +1,35 @@
+import {
+  getCurrentEnvFilePath,
+  readEnvironmentVariablesConfig,
+} from '~/common/config/utils';
 import { QueueConsts } from '~/common/constants';
 import { BullModule } from '@nestjs/bullmq';
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { QueueService } from './queue.service';
 
-@Module({
-  imports: [
-    BullModule.forRootAsync({
-      useFactory: () => ({
-        connection: {
-          host: process.env.REDIS_HOST as string,
-          port: parseInt(process.env.REDIS_PORT as string),
-        },
-      }),
-    }),
-    BullModule.registerQueueAsync({
-      name: QueueConsts.AUTH_QUEUE,
-    }),
-  ],
-  providers: [QueueService],
-  exports: [QueueService],
-})
-export class QueueModule {}
+@Module({})
+export class QueueModule {
+  static async registerAsync(): Promise<DynamicModule> {
+    const envFilePath = getCurrentEnvFilePath();
+    const config = await readEnvironmentVariablesConfig(envFilePath);
+
+    return {
+      module: QueueModule,
+      imports: [
+        BullModule.forRootAsync({
+          useFactory: () => ({
+            connection: {
+              host: config.REDIS_HOST,
+              port: config.REDIS_PORT,
+            },
+          }),
+        }),
+        BullModule.registerQueueAsync({
+          name: QueueConsts.AUTH_QUEUE,
+        }),
+      ],
+      providers: [QueueService],
+      exports: [QueueService],
+    };
+  }
+}
