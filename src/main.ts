@@ -1,3 +1,4 @@
+import helmet from 'helmet';
 import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -5,6 +6,8 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.use(helmet());
+  app.enableCors();
   app.enableVersioning({
     type: VersioningType.URI,
     prefix: 'v',
