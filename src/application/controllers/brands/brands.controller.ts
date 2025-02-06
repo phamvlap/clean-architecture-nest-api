@@ -8,6 +8,7 @@ import {
 } from '~/application/dtos/brands';
 import { AllItemsResponse } from '~/application/responses';
 import { BrandsService } from '~/application/services/brands';
+import { Version } from '~/common/enums';
 import { PaginationInterceptor } from '~/common/interceptors';
 import { ZodValidationPipe } from '~/common/pipes/zod-validation-pipe';
 import {
@@ -23,7 +24,7 @@ import {
 } from '@nestjs/common';
 import { Brand } from '@prisma/client';
 
-@Controller('brands')
+@Controller({ path: 'brands', version: [Version.V1] })
 export class BrandsController {
   constructor(private readonly _brandsService: BrandsService) {}
 

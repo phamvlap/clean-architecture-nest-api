@@ -8,6 +8,7 @@ import {
 } from '~/application/dtos/categories';
 import { AllItemsResponse } from '~/application/responses';
 import { CategoriesService } from '~/application/services/categories';
+import { Version } from '~/common/enums';
 import { ZodValidationPipe } from '~/common/pipes/zod-validation-pipe';
 import {
   Body,
@@ -21,7 +22,7 @@ import {
 } from '@nestjs/common';
 import { Category } from '@prisma/client';
 
-@Controller('categories')
+@Controller({ path: 'categories', version: [Version.V1] })
 export class CategoriesController {
   constructor(private readonly _categoriesService: CategoriesService) {}
 

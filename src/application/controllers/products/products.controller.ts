@@ -8,6 +8,7 @@ import {
 } from '~/application/dtos/products';
 import { AllItemsResponse } from '~/application/responses';
 import { ProductsService } from '~/application/services/products';
+import { Version } from '~/common/enums';
 import { PaginationInterceptor } from '~/common/interceptors';
 import { ZodValidationPipe } from '~/common/pipes/zod-validation-pipe';
 import {
@@ -23,7 +24,7 @@ import {
 } from '@nestjs/common';
 import { Product } from '@prisma/client';
 
-@Controller('products')
+@Controller({ path: 'products', version: [Version.V1] })
 export class ProductsController {
   constructor(private readonly _productsService: ProductsService) {}
 

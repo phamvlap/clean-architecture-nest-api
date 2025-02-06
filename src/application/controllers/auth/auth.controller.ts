@@ -13,12 +13,13 @@ import { AuthGetStartedResponse } from '~/application/responses';
 import { LoginResponse } from '~/application/responses';
 import { AuthService } from '~/application/services/auth';
 import { RequestUser } from '~/common/decorators';
+import { Version } from '~/common/enums';
 import { ZodValidationPipe } from '~/common/pipes/zod-validation-pipe';
 import { UserProfile } from '~/common/types';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
 
-@Controller('auth')
+@Controller({ path: 'auth', version: [Version.V1] })
 export class AuthController {
   constructor(private readonly _authService: AuthService) {}
 
